@@ -1,0 +1,22 @@
+name: tutorials
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.7
+  - pytorch=0.4.1
+  - ipython
+  - jupyter
+  - jupyterlab=0.34
+  - scipy
+  - numpy=1.15
+  - scikit-learn
+  - pandas
+  - cython
+  - rise
+  - numba
+  - pip:
+    - torchvision
+    - matplotlib~=3.0
+    - keras

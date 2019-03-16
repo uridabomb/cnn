@@ -53,7 +53,12 @@ class KNNClassifier(object):
             # - Set y_pred[i] to the most common class among them
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            row = dist_matrix[i]
+            idx = np.argpartition(row, self.k)
+            min_indices = idx[:self.k]
+            classes = [self.y_train[idx] for idx in min_indices]
+            counts = torch.from_numpy(np.bincount(classes))
+            y_pred[i] = torch.argmax(counts)
             # ========================
 
         return y_pred
@@ -80,7 +85,11 @@ class KNNClassifier(object):
 
         dists = torch.tensor([])
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        a2 = torch.diag(self.x_train @ torch.t(self.x_train))
+        b2 = torch.diag(x_test @ torch.t(x_test))
+        ab = x_test @ torch.t(self.x_train)
+
+        dists = a2.expand(len(b2), len(a2)) - 2*ab + torch.t(b2.expand(len(a2), len(b2)))
         # ========================
 
         return dists
@@ -101,7 +110,9 @@ def accuracy(y: Tensor, y_pred: Tensor):
 
     accuracy = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    diff = y - y_pred
+    error = np.count_nonzero(diff) / len(diff)
+    accuracy = 1 - error
     # ========================
 
     return accuracy

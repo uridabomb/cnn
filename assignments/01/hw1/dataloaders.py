@@ -18,7 +18,7 @@ def create_train_validation_loaders(dataset: Dataset, validation_ratio,
     :param num_workers: Number of workers to pass to dataloader init.
     :return: A tuple of train and validation DataLoader instances.
     """
-    if not(0.0 < validation_ratio < 1.0):
+    if not (0.0 < validation_ratio < 1.0):
         raise ValueError(validation_ratio)
 
     # TODO: Create two DataLoader instances, dl_train and dl_valid.
@@ -29,8 +29,18 @@ def create_train_validation_loaders(dataset: Dataset, validation_ratio,
     #    from the dataset.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    indices = list(range(len(dataset)))
+    split = int(np.floor(validation_ratio * len(dataset)))
+    train_indices, val_indices = indices[split:], indices[:split]
+    train_sampler = torch.utils.data.SubsetRandomSampler(train_indices)
+    valid_sampler = torch.utils.data.SubsetRandomSampler(val_indices)
+
+    dl_train = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, sampler=train_sampler, num_workers=num_workers
+    )
+    dl_valid = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, sampler=valid_sampler, num_workers=num_workers
+    )
     # ========================
 
     return dl_train, dl_valid
-

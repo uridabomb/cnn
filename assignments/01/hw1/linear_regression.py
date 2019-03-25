@@ -30,7 +30,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = self.weights_.T.dot(X.T)
         # ========================
 
         return y_pred
@@ -48,7 +48,8 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # w_opt = torch.inverse(torch.t(X) @ X) @ torch.t(X) @ y
+        w_opt = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
         # ========================
 
         self.weights_ = w_opt

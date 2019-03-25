@@ -74,7 +74,7 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         xb = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        xb = sklearn.preprocessing.add_dummy_feature(X, value=1.0)
         # ========================
 
         return xb
@@ -136,7 +136,11 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    features = np.array([f for f in df.columns.values if f != target_feature])
+    corrs = np.abs(np.array([df[target_feature].corr(df[f]) for f in features]))
+    argmax = np.argsort(-corrs)[:n]
+
+    top_n_features, top_n_corr = features[argmax], corrs[argmax]
     # ========================
 
     return top_n_features, top_n_corr

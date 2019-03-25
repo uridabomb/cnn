@@ -55,13 +55,15 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        true_cls_scr = x_scores.gather(dim=1, index=y.long())
-        loss = (x_scores - true_cls_scr + self.delta).index_add_(1, y.long(), torch.ones(y.shape)*self.delta)
+        true_cls_scr = x_scores.gather(dim=1, index=y.reshape(y.shape[0],1))
+        loss_matrix = (x_scores - true_cls_scr + self.delta)
+        #in the loss matrix we have delta loss for the true class
+        #delta>0 so we need to subtract the extra incurred loss
+        loss = (loss_matrix[loss_matrix>0].sum() - self.delta*y.shape[0])/y.shape[0]
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
         # ========================
 
         return loss

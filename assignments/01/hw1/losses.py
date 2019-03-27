@@ -64,6 +64,7 @@ class SVMHingeLoss(ClassifierLoss):
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
+        self.grad_ctx = (loss_matrix, x, y)
         # ========================
 
         return loss
@@ -76,7 +77,12 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        loss_mat, x, y = self.grad_ctx
+        loss_mat[loss_mat>0] = 1
+        loss_mat[loss_mat<=0] = 0
+        indicator_func_sums = -(loss_mat.sum(dim=1)-1)
+        G = loss_mat.scatter_add(1, y.repeat(loss_mat.shape[1],1).t(), -loss_mat)
+        grad = x.t().mm(G)/y.shape[0]
         # ========================
 
         return grad

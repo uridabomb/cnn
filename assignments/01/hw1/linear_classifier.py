@@ -100,7 +100,34 @@ class LinearClassifier(object):
             average_loss = 0
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            #train on all of train set
+            for x_train, y_train in dl_train:
+                y_train_pred, train_scores = self.predict(x_train)
+                total_correct += self.evaluate_accuracy(y_train, y_train_pred)
+                average_loss += loss_fn.loss(x_train, y_train, train_scores, y_train_pred) +\
+                                (weight_decay*self.weights.norm()**2)/2
+                self.weights = self.weights-learn_rate*(loss_fn.grad()+weight_decay*self.weights)
+
+            #save results
+            average_loss /= len(dl_train)
+            total_correct /= len(dl_train)
+            train_res.loss.append(average_loss)
+            train_res.accuracy.append(total_correct)
+
+            #test on validation set
+            total_correct = 0
+            average_loss = 0
+            for x_valid, y_valid in dl_valid:
+                y_valid_pred, valid_scores = self.predict(x_valid)
+                total_correct += self.evaluate_accuracy(y_valid, y_valid_pred)
+                average_loss += loss_fn.loss(x_valid, y_valid, valid_scores, y_valid_pred) +\
+                                (weight_decay*self.weights.norm()**2)/2
+
+            # save results
+            average_loss /= len(dl_valid)
+            total_correct /= len(dl_valid)
+            valid_res.loss.append(average_loss)
+            valid_res.accuracy.append(total_correct)
             # ========================
             print('.', end='')
 
@@ -120,7 +147,11 @@ class LinearClassifier(object):
         # The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        weight_mat = self.weights
+        if has_bias:
+            weight_mat = weight_mat[:-1]
+
+        w_images = weight_mat.t().reshape(self.n_classes, *img_shape)
         # ========================
 
         return w_images

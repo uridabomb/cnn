@@ -30,7 +30,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        y_pred = self.weights_.T.dot(X.T)
+        y_pred = np.dot(X, self.weights_)
         # ========================
 
         return y_pred
@@ -48,8 +48,14 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        # w_opt = torch.inverse(torch.t(X) @ X) @ torch.t(X) @ y
-        w_opt = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+        # The optimal solution for the linear regression optimization problem (using the L2 metric) is given by:
+        # W* = (lambda * I + X^T * X)^-1 * X^T * Y - (Psuedo-Inverse)
+
+        XTX = np.dot(X.T, X)
+        𝜆I = self.reg_lambda * np.eye(X.shape[1])
+        inv = np.linalg.inv
+
+        w_opt = inv(𝜆I + XTX).dot(X.T).dot(y)
         # ========================
 
         self.weights_ = w_opt
@@ -91,7 +97,9 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        CHAS, RAD, TAX = 3, 8, 9
+        self.features_to_discard = [CHAS, RAD]
+        self.poly = PolynomialFeatures(self.degree)
         # ========================
 
     def fit(self, X, y=None):
@@ -113,7 +121,7 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
 
         X_transformed = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        X_transformed = self.poly.fit_transform(X)
         # ========================
 
         return X_transformed
@@ -175,7 +183,23 @@ def cv_best_hyperparams(model: BaseEstimator, X, y, k_folds,
     # - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    best_params = {'bostonfeaturestransformer__degree': 0,
+                   'linearregressor__reg_lambda': 0}
+    best_score = 0
+
+    for 𝜆 in lambda_range:
+        for deg in degree_range:
+            hypers = {'bostonfeaturestransformer__degree': deg,
+                      'linearregressor__reg_lambda': 𝜆}
+            model.set_params(**hypers)
+
+            scores = sklearn.model_selection.cross_validate(model, X, y, scoring='r2', cv=k_folds)
+            mean_score = np.mean(scores['test_score'])
+
+            if mean_score > best_score:
+                best_score = mean_score
+                best_params['linearregressor__reg_lambda'] = 𝜆
+                best_params['bostonfeaturestransformer__degree'] = deg
     # ========================
 
     return best_params

@@ -150,6 +150,150 @@ Therefore,
 \end_layout
 
 \begin_layout Section*
+Question 1.2
+\end_layout
+
+\begin_layout Standard
+It holds that:
+\begin_inset Formula 
+\[
+\begin{aligned}\frac{\partial l}{\partial w^{T}} & =\frac{1}{1+\exp\left(-y\cdot f_{w}(x)\right)}\cdot\exp\left(-y\cdot f_{w}(x)\right)\cdot(-y\cdot x)\\
+ & =\frac{-y\cdot x\cdot\exp\left(-y\cdot f_{w}(x)\right)}{1+\exp\left(-y\cdot f_{w}(x)\right)}\\
+ & =-y\cdot x\cdot e^{-y\cdot w^{T}x}\cdot\left(1+e^{-y\cdot w^{T}x}\right)^{-1}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Let us define 
+\begin_inset Formula $\rho=B\cdot e^{B^{2}}$
+\end_inset
+
+ and we claim that 
+\begin_inset Formula $l$
+\end_inset
+
+ is 
+\begin_inset Formula $\rho$
+\end_inset
+
+-Lipschitz with respect to 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ In order to show that, it suffices to show that 
+\begin_inset Formula $\forall w.\left\Vert \frac{\partial l}{\partial w^{T}}\right\Vert \leq\rho$
+\end_inset
+
+.
+ Using Cauchy-Schwartz inequality, we get 
+\begin_inset Formula $f_{w}(x)=\left\langle x,w\right\rangle \leq\left|\left\langle x,w\right\rangle \right|\leq\left\Vert x\right\Vert \left\Vert w\right\Vert \leq B^{2}$
+\end_inset
+
+.
+ Thus, using the fact that 
+\begin_inset Formula $\forall z.e^{z}\geq0$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}\left\Vert \frac{\partial l}{\partial w^{T}}\right\Vert  & =\left\Vert \frac{-y\cdot x\cdot\exp\left(-y\cdot f_{w}(x)\right)}{1+\exp\left(-y\cdot f_{w}(x)\right)}\right\Vert \\
+ & =\left|\frac{\exp\left(-y\cdot f_{w}(x)\right)}{1+\exp\left(-y\cdot f_{w}(x)\right)}\right|\left\Vert x\right\Vert \\
+ & =\left|\frac{e^{-y\cdot w^{T}x}}{1+e^{-y\cdot w^{T}x}}\right|\left\Vert x\right\Vert \\
+ & =\frac{e^{-y\cdot w^{T}x}}{1+e^{-y\cdot w^{T}x}}\left\Vert x\right\Vert \\
+ & \leq\frac{e^{w^{T}x}}{1+0}\left\Vert x\right\Vert \\
+ & \leq e^{B^{2}}\cdot B
+\end{aligned}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+And we conclude that 
+\begin_inset Formula $l$
+\end_inset
+
+ is indeed 
+\begin_inset Formula $\rho$
+\end_inset
+
+-Lipschitz with respect to 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ Now, Let us inspect the hessian matrix:
+\begin_inset Formula 
+\[
+\begin{aligned}\frac{\partial^{2}l}{\partial w^{T}\partial w} & =-y\cdot x\cdot\left(\left(-e^{-y\cdot w^{T}x}\cdot y\cdot x^{T}\cdot\left(1+e^{-y\cdot w^{T}x}\right)^{-1}\right)+\left(e^{-y\cdot w^{T}x}\left(1+e^{-y\cdot w^{T}x}\right)^{-2}\cdot y\cdot x^{T}\right)\right)\\
+ & =-y^{2}xx^{T}\left(e^{-y\cdot w^{T}x}\right)\left(\left(1+e^{-y\cdot w^{T}x}\right)^{-2}-\left(1+e^{-y\cdot w^{T}x}\right)^{-1}\right)
+\end{aligned}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+We denote the hessian matrix as 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $u\in\mathbb{R}^{n}$
+\end_inset
+
+.
+ Using the fact that 
+\begin_inset Formula $\forall w.\left(1+e^{-y\cdot w^{T}x}\right)^{-2}-\left(1+e^{-y\cdot w^{T}x}\right)^{-1}\leq0$
+\end_inset
+
+, it is obvious that 
+\begin_inset Formula $u^{T}Hu\geq0$
+\end_inset
+
+.
+ Therefore, the hessian is positive semidefinite, thus 
+\begin_inset Formula $l$
+\end_inset
+
+ is convex with respect to 
+\begin_inset Formula $w$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\Box$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
 SGD proof of lemma 1
 \end_layout
 

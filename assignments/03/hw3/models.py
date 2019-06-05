@@ -150,7 +150,7 @@ class ConvClassifier(nn.Module):
         # return class scores.
         # ====== YOUR CODE: ======
         x = self.feature_extractor(x)
-        x = x.reshape(1, -1).squeeze()  # flattening
+        x = x.view(x.size(0), -1)
         out = self.classifier(x)
         # ========================
         return out

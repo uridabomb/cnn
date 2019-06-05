@@ -90,8 +90,23 @@ class ConvClassifier(nn.Module):
         # Use only dimension-preserving 3x3 convolutions. Apply 2x2 Max
         # Pooling to reduce dimensions.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if len(self.filters) == 0:
+            return
 
+        def add_conv_relu(_in_channels, _out_channels):
+            layers.append(nn.Conv2d(_in_channels, _out_channels, 3, padding=1))
+            layers.append(nn.ReLU())
+
+        add_conv_relu(in_channels, self.filters[0])
+
+        for i, n_filters in enumerate(self.filters[1:]):
+            if (i+1) % self.pool_every == 0:
+                layers.append(nn.MaxPool2d(2))
+
+            add_conv_relu(self.filters[i], n_filters)
+
+        if len(self.filters) % self.pool_every == 0:
+            layers.append(nn.MaxPool2d(2))
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -105,7 +120,26 @@ class ConvClassifier(nn.Module):
         # You'll need to calculate the number of features first.
         # The last Linear layer should have an output dimension of out_classes.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # TODO: check this calculation
+        h, w = in_h, in_w
+        N, P = len(self.filters), self.pool_every
+        for _ in range(N//P):
+            h, w = ((h - 2) // 2) + 1, ((w - 2) // 2) + 1
+
+        d = self.filters[-1]
+
+        n_features = h * w * d
+
+        def add_linear_relu(in_features, out_features):
+            layers.append(nn.Linear(in_features, out_features))
+            layers.append(nn.ReLU())
+
+        add_linear_relu(n_features, self.hidden_dims[0])
+
+        for i, dim in enumerate(self.hidden_dims[1:]):
+            add_linear_relu(self.hidden_dims[i], dim)
+
+        layers.append(nn.Linear(self.hidden_dims[-1], self.out_classes))
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -115,20 +149,22 @@ class ConvClassifier(nn.Module):
         # Extract features from the input, run the classifier on them and
         # return class scores.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        x = self.feature_extractor(x)
+        x = x.reshape(1, -1).squeeze()  # flattening
+        out = self.classifier(x)
         # ========================
         return out
 
 
-class YourCodeNet(ConvClassifier):
-    def __init__(self, in_size, out_classes, filters, pool_every, hidden_dims):
-        super().__init__(in_size, out_classes, filters, pool_every, hidden_dims)
-
-    # TODO: Change whatever you want about the ConvClassifier to try to
-    # improve it's results on CIFAR-10.
-    # For example, add batchnorm, dropout, skip connections, change conv
-    # filter sizes etc.
-    # ====== YOUR CODE: ======
-    raise NotImplementedError()
-    # ========================
+# class YourCodeNet(ConvClassifier):
+#     def __init__(self, in_size, out_classes, filters, pool_every, hidden_dims):
+#         super().__init__(in_size, out_classes, filters, pool_every, hidden_dims)
+#
+#     # TODO: Change whatever you want about the ConvClassifier to try to
+#     # improve it's results on CIFAR-10.
+#     # For example, add batchnorm, dropout, skip connections, change conv
+#     # filter sizes etc.
+#     # ====== YOUR CODE: ======
+#     raise NotImplementedError()
+#     # ========================
 

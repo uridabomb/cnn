@@ -85,7 +85,24 @@ class Trainer(abc.ABC):
             # - Implement early stopping. This is a very useful and
             #   simple regularization technique that is highly recommended.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            train_result = self.train_epoch(dl_train, max_batches=kw['max_batches_train'])
+            train_loss.extend(train_result.losses)
+            train_acc.append(train_result.accuracy)
+
+            test_result = self.test_epoch(dl_test, max_batches=kw['max_batches_test'])
+            test_loss.extend(test_result.losses)
+            test_acc.append(test_result.accuracy)
+
+            if best_acc is None:
+                best_acc = test_result.accuracy
+            elif best_acc < test_result.accuracy:
+                best_acc = test_result.accuracy
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
+
+            if early_stopping and epochs_without_improvement == early_stopping:
+                break
             # ========================
 
             # Save model checkpoint if requested
@@ -338,7 +355,7 @@ class TorchTrainer(Trainer):
         num_correct = torch.eq(indices, y).view(-1).sum().item()
         # ========================
 
-        return BatchResult(loss, num_correct)
+        return BatchResult(loss.data.tolist(), num_correct)
 
     def test_batch(self, batch) -> BatchResult:
         X, y = batch
@@ -358,4 +375,4 @@ class TorchTrainer(Trainer):
             num_correct = torch.eq(indices, y).view(-1).sum().item()
             # ========================
 
-        return BatchResult(loss, num_correct)
+        return BatchResult(loss.data.tolist(), num_correct)

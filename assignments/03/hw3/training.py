@@ -535,6 +535,8 @@ class TorchTrainer(Trainer_1):
 
         indices = torch.argmax(y_pred, dim=1)
         num_correct = torch.eq(indices, y).view(-1).sum().item()
+
+        loss = loss.data.tolist()
         # ========================
 
         return BatchResult(loss, num_correct)
@@ -551,7 +553,7 @@ class TorchTrainer(Trainer_1):
             # - Calculate number of correct predictions
             # ====== YOUR CODE: ======
             y_pred = self.model(X)
-            loss = self.loss_fn(y_pred, y)
+            loss = self.loss_fn(y_pred, y).data.tolist()
 
             indices = torch.argmax(y_pred, dim=1)
             num_correct = torch.eq(indices, y).view(-1).sum().item()

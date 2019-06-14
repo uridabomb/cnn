@@ -4,9 +4,9 @@ python -m hw3.experiments run-exp -n exp1_1_K32_L8 -K 32 -L 8 -P 8 -H 64 64
 python -m hw3.experiments run-exp -n exp1_1_K32_L16 -K 32 -L 16 -P 16 -H 64 64
 
 python -m hw3.experiments run-exp -n exp1_1_K64_L2 -K 64 -L 2 -P 2 -H 64 64
-python -m hw3.experiments run-exp -n exp1_1_K32_L4 -K 64 -L 4 -P 4 -H 64 64
-python -m hw3.experiments run-exp -n exp1_1_K32_L8 -K 64 -L 8 -P 8 -H 64 64
-python -m hw3.experiments run-exp -n exp1_1_K32_L16 -K 64 -L 16 -P 16 -H 64 64
+python -m hw3.experiments run-exp -n exp1_1_K64_L4 -K 64 -L 4 -P 4 -H 64 64
+python -m hw3.experiments run-exp -n exp1_1_K64_L8 -K 64 -L 8 -P 8 -H 64 64
+python -m hw3.experiments run-exp -n exp1_1_K64_L16 -K 64 -L 16 -P 16 -H 64 64
 
 python -m hw3.experiments run-exp -n exp1_2_L2_K32 -K 32 -L 2 -P 2 -H 64 64
 python -m hw3.experiments run-exp -n exp1_2_L2_K64 -K 64 -L 2 -P 2 -H 64 64

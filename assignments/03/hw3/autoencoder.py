@@ -17,7 +17,21 @@ class EncoderCNN(nn.Module):
         # You can use any Conv layer parameters, use pooling or only strides,
         # use any activation functions, use BN or Dropout, etc.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        padding, stride = 2, 2
+        kernel_size = 5
+
+        modules += [nn.Conv2d(in_channels, 64, kernel_size, padding=padding, stride=stride, bias=False),
+                    nn.BatchNorm2d(64),
+                    nn.ReLU(),
+                    nn.Conv2d(64, 128, kernel_size, padding=padding, stride=stride, bias=False),
+                    nn.BatchNorm2d(128),
+                    nn.ReLU(),
+                    nn.Conv2d(128, 256, kernel_size, padding=padding, stride=stride, bias=False),
+                    nn.BatchNorm2d(256),
+                    nn.ReLU(),
+                    nn.Conv2d(256, out_channels, kernel_size, padding=padding, stride=stride, bias=False),
+                    nn.BatchNorm2d(out_channels),
+                    nn.ReLU()]
         # ========================
         self.cnn = nn.Sequential(*modules)
 
@@ -39,7 +53,26 @@ class DecoderCNN(nn.Module):
         # Output should be a batch of images, with same dimensions as the
         # inputs to the Encoder were.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        padding, stride = 2, 2
+        kernel_size = 5
+        output_padding=1
+
+        modules += [nn.ConvTranspose2d(in_channels, 256, kernel_size,
+                                       padding=padding, output_padding=1, stride=stride, bias=False),
+                    nn.BatchNorm2d(256),
+                    nn.ReLU(),
+                    nn.ConvTranspose2d(256, 128, kernel_size,
+                                       padding=padding, output_padding=1, stride=stride, bias=False),
+                    nn.BatchNorm2d(128),
+                    nn.ReLU(),
+                    nn.ConvTranspose2d(128, 64, kernel_size,
+                                       padding=padding, output_padding=1, stride=stride, bias=False),
+                    nn.BatchNorm2d(64),
+                    nn.ReLU(),
+                    nn.ConvTranspose2d(64, out_channels, kernel_size,
+                                       padding=padding, output_padding=1, stride=stride, bias=False),
+                    nn.BatchNorm2d(out_channels),
+                    nn.ReLU()]
         # ========================
         self.cnn = nn.Sequential(*modules)
 

@@ -172,23 +172,44 @@ class YourCodeNet(ConvClassifier):
 
         def add_conv_relu(_in_channels, _out_channels):
             layers.append(nn.Conv2d(_in_channels, _out_channels, 3, padding=1))
-            layers.append(nn.BatchNorm2d(_out_channels))
             layers.append(nn.ReLU())
-            layers.append(nn.Dropout2d(.2))
+            layers.append(nn.BatchNorm2d(_out_channels))
 
-        def add_pool_dropout():
+        def add_pool_dropout(_j=0):
             layers.append(nn.MaxPool2d(2))
+            layers.append(nn.Dropout2d(.2+(_j*.1)))
 
         add_conv_relu(in_channels, self.filters[0])
 
+        j = 0
         for i, n_filters in enumerate(self.filters[1:]):
             if (i + 1) % self.pool_every == 0:
-                add_pool_dropout()
+                add_pool_dropout(j)
+                j += 1
 
             add_conv_relu(self.filters[i], n_filters)
 
         if len(self.filters) % self.pool_every == 0:
-            add_pool_dropout()
+            add_pool_dropout(j)
+        # ========================
+        seq = nn.Sequential(*layers)
+        return seq
+
+    def _make_classifier(self):
+        in_channels, in_h, in_w, = tuple(self.in_size)
+
+        layers = []
+
+        h, w = in_h, in_w
+        N, P = len(self.filters), self.pool_every
+        for _ in range(N//P):
+            h, w = ((h - 2) // 2) + 1, ((w - 2) // 2) + 1
+
+        d = self.filters[-1]
+
+        n_features = h * w * d
+
+        layers.append(nn.Linear(n_features, self.out_classes))
         # ========================
         seq = nn.Sequential(*layers)
         return seq

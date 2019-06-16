@@ -177,7 +177,7 @@ class YourCodeNet(ConvClassifier):
 
         def add_pool_dropout():
             layers.append(nn.MaxPool2d(2))
-            layers.append(nn.Dropout2d(.4))
+            layers.append(nn.Dropout2d(.5))
 
         add_conv_relu(in_channels, self.filters[0])
 

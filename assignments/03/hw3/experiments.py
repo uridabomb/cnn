@@ -63,7 +63,6 @@ def run_experiment(run_name, out_dir='./results', seed=None,
         filters.extend([fpl] * layers_per_block)
 
     model = model_cls(in_size, num_classes, filters=filters, pool_every=pool_every, hidden_dims=hidden_dims)
-    print(model)
     loss_fn = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 

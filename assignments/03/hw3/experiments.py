@@ -45,6 +45,7 @@ def run_experiment(run_name, out_dir='./results', seed=None,
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Select model class (experiment 1 or 2)
+    print(f'ycn={ycn}')
     model_cls = models.ConvClassifier if not ycn else models.YourCodeNet
     # TODO: Train
     # - Create model, loss, optimizer and trainer based on the parameters.

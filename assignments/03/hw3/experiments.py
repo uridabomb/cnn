@@ -77,7 +77,7 @@ def run_experiment(run_name, out_dir='./results', seed=None,
     #                       max_batches_train=13000//bs_train, max_batches_test=4000//bs_test)
 
     fit_res = trainer.fit(dl_train=dl_train, dl_test=dl_test, num_epochs=epochs, checkpoints=checkpoints,
-                          early_stopping=early_stopping)
+                          early_stopping=early_stopping, max_batches=batches)
     # ========================
 
     save_experiment(run_name, out_dir, cfg, fit_res)

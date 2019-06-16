@@ -179,14 +179,14 @@ class YourCodeNet(ConvClassifier):
 
         for i, n_filters in enumerate(self.filters[1:]):
             if (i + 1) % self.pool_every == 0:
-                layers.append(nn.MaxPool2d(2))
-                layers.append(nn.Dropout2d(.3))
+                layers.append(nn.MaxPool2d(2, stride=2))
+                layers.append(nn.Dropout2d(.2))
 
             add_conv_relu(self.filters[i], n_filters)
 
         if len(self.filters) % self.pool_every == 0:
-            layers.append(nn.MaxPool2d(2))
-            layers.append(nn.Dropout2d())
+            layers.append(nn.MaxPool2d(2, stride=2))
+            layers.append(nn.Dropout2d(.2))
         # ========================
         seq = nn.Sequential(*layers)
         return seq

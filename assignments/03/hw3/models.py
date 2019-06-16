@@ -191,6 +191,8 @@ class YourCodeNet(ConvClassifier):
 
         if len(self.filters) % self.pool_every == 0:
             add_pool_dropout(j)
+
+        layers.append(nn.AdaptiveAvgPool2d(self.filters[-1]))
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -198,18 +200,7 @@ class YourCodeNet(ConvClassifier):
     def _make_classifier(self):
         in_channels, in_h, in_w, = tuple(self.in_size)
 
-        layers = []
-
-        h, w = in_h, in_w
-        N, P = len(self.filters), self.pool_every
-        for _ in range(N//P):
-            h, w = ((h - 2) // 2) + 1, ((w - 2) // 2) + 1
-
-        d = self.filters[-1]
-
-        n_features = h * w * d
-
-        layers.append(nn.Linear(n_features, self.out_classes))
+        layers = [nn.Linear(self.filters[-1], self.out_classes)]
         # ========================
         seq = nn.Sequential(*layers)
         return seq

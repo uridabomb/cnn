@@ -138,7 +138,7 @@ def parse_cli():
                              'accuracy improves', default=None)
     sp_exp.add_argument('--lr', type=float,
                         help='Learning rate', default=1e-3)
-    sp_exp.add_argument('--reg', type=int,
+    sp_exp.add_argument('--reg', type=float,
                         help='L2 regularization', default=1e-3)
 
     # # Model

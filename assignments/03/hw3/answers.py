@@ -132,60 +132,42 @@ def part4_generation_params():
     temperature = .0001
     # TODO: Tweak the parameters to generate a literary masterpiece.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    start_seq = "KING RAN:"
+    temperature = .1
     # ========================
     return start_seq, temperature
 
 
 part4_q1 = r"""
-**Your answer:**
 
+for 2 main reasons:
+- characters that are far from each other are less semantically connected or relevant to each other. 
+splitting to sequences prevents the loss from being effected by far, hence less relevant chars.
+- splitting to shorter sequences sequences speeds up the training - each batch takes less time to calaulate and propogate changes to the model.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
 part4_q2 = r"""
-**Your answer:**
+- the method for the model to "remember" more than sequence length is with the "hidden state" of the GRU.
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
 part4_q3 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+unlike other learning tasks, here the order of samples is important. as we mentioned, past sequences influence the hidden state.
+hence -  it's important to feed them in correct order and not shuffle so that the "hidden state" represents the context accuratly..
 
 """
 
 part4_q4 = r"""
 **Your answer:**
+- while sampling, we want out text to look structured and prevent mistakes and "random feeling" in the text.
+this is why we lower the temperature and "pushing" the more likely outputs to being even more likely.
 
+- very high temperature makes the chracter distribution very "soft": all characters have similar probability, and text looks more random.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+- very low temperature makes the probability distribution more "steep" -the largest logit is pushed close to 1, and the sampling becomes very conservative and non-diverse. similar sequences are likely to be generated many times. 
 
 """
 # ==============

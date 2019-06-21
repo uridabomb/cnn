@@ -46,7 +46,6 @@ def run_experiment(run_name, out_dir='./results', seed=None,
 
     # Select model class (experiment 1 or 2)
     model_cls = models.ConvClassifier if not ycn else models.YourCodeNet
-
     # TODO: Train
     # - Create model, loss, optimizer and trainer based on the parameters.
     #   Use the model you've implemented previously, cross entropy loss and
@@ -63,7 +62,7 @@ def run_experiment(run_name, out_dir='./results', seed=None,
     for fpl in filters_per_layer:
         filters.extend([fpl] * layers_per_block)
 
-    model = models.ConvClassifier(in_size, num_classes, filters=filters, pool_every=pool_every, hidden_dims=hidden_dims)
+    model = model_cls(in_size, num_classes, filters=filters, pool_every=pool_every, hidden_dims=hidden_dims)
     loss_fn = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
@@ -77,7 +76,7 @@ def run_experiment(run_name, out_dir='./results', seed=None,
     #                       max_batches_train=13000//bs_train, max_batches_test=4000//bs_test)
 
     fit_res = trainer.fit(dl_train=dl_train, dl_test=dl_test, num_epochs=epochs, checkpoints=checkpoints,
-                          early_stopping=early_stopping)
+                          early_stopping=early_stopping, max_batches=batches)
     # ========================
 
     save_experiment(run_name, out_dir, cfg, fit_res)
@@ -138,7 +137,7 @@ def parse_cli():
                              'accuracy improves', default=None)
     sp_exp.add_argument('--lr', type=float,
                         help='Learning rate', default=1e-3)
-    sp_exp.add_argument('--reg', type=int,
+    sp_exp.add_argument('--reg', type=float,
                         help='L2 regularization', default=1e-3)
 
     # # Model

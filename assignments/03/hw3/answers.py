@@ -72,55 +72,52 @@ An equation: $e^{i\pi} -1 = 0$
 
 part3_q1 = r"""
 **Your answer:**
+Explain the effect of depth on the accuracy. What depth produces the best results and why do you think that's the case?
+Were there values of L for which the network wasn't trainable? what causes this? Suggest two things which may be done to resolve it at least partially.
 
+As the depth gets bigger, the accuracy get smaller. As we can see, the best results are for L=2,4. L=8 has a bit lower 
+accuracy. For L=16 the network was not trainable. A reasonable explaination for those results is 
+the vanishing/exploding gradient phenomena.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+There are several things that may be done to resolve this problem. Among them:
+1. Add batch normalizations, which will make the gradients to be more stable.
+2. Use skip-connections, which will make the network to do less multiplications along the depth, and the gradient will 
+get bigger/smaller in a lower rate.
 """
 
 part3_q2 = r"""
 **Your answer:**
+As the best K vary for each L=2,4,8, we may analyze that there is no K that is better to use than the rest.
+In comparison to experiment 1.1, increase in K does not decrease the accuracy, as opposed to increase in L
+(from some threshold) in experminent. 
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+Moreover, in experiment 1.2, there is no value of K which yields an untrainable
+network.
 """
 
 part3_q3 = r"""
 **Your answer:**
+The best results are for L=2, as the network's depth is okay, while L=4 yielded untrainable network as the network is
+too deep. 
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+Those results fit nicely with our prior experiments, as we saw there is no best K and the network should not 
+be too deep or too shallow.
 """
 
 
 part3_q4 = r"""
 **Your answer:**
+We added batch normalization and dropout layers, in order to make the network be more trainable for more epochs,
+and to ba able to handle larger depths. Moreover, we replaced the linear layers with avarage pooling layer
+with output size (1, 1).
 
+L3_K64-128-256 has the best accuracy. L4_K64-128-256-512 has the worst result, 
+as even with normalization this network is too deep. 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+In comparison to experiment 1, we can see that the early-stopping mechainsm stopped the training after much more epochs, 
+and the test accuracy correlates much better with the train accuracy (they increase in a much closer rate).
 
+Moreover, the best final test accuracy improved significantly.
 """
 
 # ==============

@@ -165,6 +165,43 @@ class YourCodeNet(ConvClassifier):
     # For example, add batchnorm, dropout, skip connections, change conv
     # filter sizes etc.
     # ====== YOUR CODE: ======
-    pass
-    # ========================
+    def _make_feature_extractor(self):
+        in_channels, in_h, in_w, = tuple(self.in_size)
 
+        layers = []
+
+        def add_conv_relu(_in_channels, _out_channels):
+            layers.append(nn.Conv2d(_in_channels, _out_channels, 3, padding=1))
+            layers.append(nn.ReLU())
+            layers.append(nn.BatchNorm2d(_out_channels))
+
+        def add_pool_dropout(_j=0):
+            layers.append(nn.MaxPool2d(2))
+            layers.append(nn.Dropout2d(.2+(_j*.1)))
+
+        add_conv_relu(in_channels, self.filters[0])
+
+        j = 0
+        for i, n_filters in enumerate(self.filters[1:]):
+            if (i + 1) % self.pool_every == 0:
+                add_pool_dropout(j)
+                j += 1
+
+            add_conv_relu(self.filters[i], n_filters)
+
+        if len(self.filters) % self.pool_every == 0:
+            add_pool_dropout(j)
+
+        layers.append(nn.AdaptiveAvgPool2d((1, 1)))
+        # ========================
+        seq = nn.Sequential(*layers)
+        return seq
+
+    def _make_classifier(self):
+        in_channels, in_h, in_w, = tuple(self.in_size)
+
+        layers = [nn.Linear(self.filters[-1], self.out_classes)]
+        # ========================
+        seq = nn.Sequential(*layers)
+        return seq
+    # ========================

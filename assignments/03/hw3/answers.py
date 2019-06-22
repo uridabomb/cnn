@@ -273,7 +273,10 @@ def part6_gan_hyperparams():
 part6_q1 = r"""
 
 when we train the discriminator we need to generate samples from the generator so the discriminator can learn to tell
-the fake from the real data.
+the fake from the real data, so the computation of the samples is part of the computational graph that pytorch is
+generating for the discriminator. when we backpropogate through the discriminators loss we don't want to compute
+gradients for the generatation of the samples as the the discriminator's objective is the opposite of the generator's
+objective. when we calculate the generator loss however we do want to compute gradients so the generator will improve
 
 
 """
@@ -282,9 +285,7 @@ part6_q2 = r"""
 1. No, we should stop according to the quality of the output, low generator loss means the generator is fooling the discriminator
 but that might happen if the discriminator is not well trained yet and therefore cannot really tell apart fake from real images.
 
-2. What does it mean if the discriminator loss remains at a constant value while the generator loss decreases?
-
-this situation indicates that the generator is improving and it is fooling the discriminator.
+2. this situation indicates that the generator is improving and it is fooling the discriminator.
 from the losses definition we can see that if the generators loss, defined as: $$
 -\mathbb{E} _{\bb{z} \sim p(\bb{Z}) } \log (\Delta _{\bb{\delta}}(\Psi _{\bb{\gamma}} (\bb{z}) ))
 $$ is decreasing than the $$  \, - \, 

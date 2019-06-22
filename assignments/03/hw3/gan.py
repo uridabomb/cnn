@@ -22,13 +22,13 @@ class Discriminator(nn.Module):
         # You can then use either an affine layer or another conv layer to
         # flatten the features.
         # ====== YOUR CODE: ======
-        self.conv1 = nn.Conv2d(3, 128, 3, padding=1, stride=2)
-        self.conv1_bn = nn.BatchNorm2d(128)
-        self.conv2 = nn.Conv2d(128, 128, 3, padding=1, stride=2)
+        self.conv1 = nn.Conv2d(3, 64, 3, padding=1, stride=2)
+        self.conv1_bn = nn.BatchNorm2d(64)
+        self.conv2 = nn.Conv2d(64, 128, 3, padding=1, stride=2)
         self.conv2_bn = nn.BatchNorm2d(128)
         self.conv3 = nn.Conv2d(128, 256, 3, padding=1, stride=2)
         self.conv3_bn = nn.BatchNorm2d(256)
-        self.fc1 = nn.Linear(4096, 64)
+        self.fc1 = nn.Linear(4096*4, 64)
         self.fc_bn = nn.BatchNorm1d(64)
         self.fc2 = nn.Linear(64, 1)
 
@@ -47,7 +47,7 @@ class Discriminator(nn.Module):
         x = F.leaky_relu(self.conv1_bn(self.conv1(x)), 0.2)
         x = F.leaky_relu(self.conv2_bn(self.conv2(x)), 0.2)
         x = F.leaky_relu(self.conv3_bn(self.conv3(x)), 0.2)
-        x = x.view(-1, 4096)
+        x = x.view(-1, 4096*4)
         x = F.leaky_relu(self.fc1(x), 0.2)
         x = F.dropout(x, 0.2)
         y = self.fc2(x)
@@ -163,8 +163,8 @@ def discriminator_loss_fn(y_data, y_generated, data_label=0, label_noise=0.0):
     generated_label_tensor = 1 - data_label_tensor
 
     # add noise
-    data_label_tensor = data_label_tensor + torch.FloatTensor(N).uniform_(e0, e1).cuda()
-    generated_label_tensor = generated_label_tensor + torch.FloatTensor(N).uniform_(e0, e1).cuda()
+    data_label_tensor = data_label_tensor + torch.FloatTensor(N).uniform_(e0, e1).to(device)
+    generated_label_tensor = generated_label_tensor + torch.FloatTensor(N).uniform_(e0, e1).to(device)
 
     loss_data = F.binary_cross_entropy_with_logits(y_data, data_label_tensor)
     loss_generated = F.binary_cross_entropy_with_logits(y_generated, generated_label_tensor)

@@ -305,9 +305,9 @@ class MultilayerGRU(nn.Module):
             for i in range(self.n_layers):
                 params = self.layer_params[i]
                 h_i = layer_states[i]
-                z = F.sigmoid(params[0](X_t) + params[1](h_i))
-                r = F.sigmoid(params[2](X_t) + params[3](h_i))
-                g = F.tanh(params[4](X_t) + params[5](r * h_i))
+                z = torch.sigmoid(params[0](X_t) + params[1](h_i))
+                r = torch.sigmoid(params[2](X_t) + params[3](h_i))
+                g = torch.tanh(params[4](X_t) + params[5](r * h_i))
 
                 next_h = z * h_i + (1 - z) * g
                 layer_states[i] = next_h

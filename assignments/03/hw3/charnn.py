@@ -240,28 +240,24 @@ class MultilayerGRU(nn.Module):
         #     then call self.register_parameter() on them. Also make
         #     sure to initialize them. See functions in torch.nn.init.
         # ====== YOUR CODE: ======
-        for i in range(0, n_layers):
-            inner_dim = h_dim
-            if i == 0:
-                inner_dim = in_dim
-            w_xz = nn.Linear(inner_dim, h_dim)
-            w_hz = nn.Linear(h_dim, h_dim, bias=False)
-            w_xr = nn.Linear(inner_dim, h_dim)
-            w_hr = nn.Linear(h_dim, h_dim, bias=False)
-            w_xg = nn.Linear(inner_dim, h_dim)
-            w_hg = nn.Linear(h_dim, h_dim, bias=False)
-            drop = nn.Dropout(dropout)
-            l_param = (w_xz, w_hz, w_xr, w_hr, w_xg, w_hg, drop)
-            self.layer_params.append(l_param)
-            self.add_module("layer{}_xz".format(i), w_xz)
-            self.add_module("layer{}_hz".format(i), w_hz)
-            self.add_module("layer{}_xr".format(i), w_xr)
-            self.add_module("layer{}_hr".format(i), w_hr)
-            self.add_module("layer{}_xg".format(i), w_xg)
-            self.add_module("layer{}_hg".format(i), w_hg)
-
-        self.w_y = nn.Linear(h_dim, out_dim)
-        self.add_module("out", self.w_y)
+        self.dropout = dropout
+        for l in range(0,self.n_layers):
+            x_dim = self.in_dim if l==0 else self.h_dim
+            w_xz = nn.Linear(x_dim,self.h_dim,bias = False)
+            w_hz = nn.Linear(self.h_dim,self.h_dim,bias = True)
+            w_xr = nn.Linear(x_dim,self.h_dim,bias = False)
+            w_hr = nn.Linear(self.h_dim,self.h_dim,bias = True)
+            w_xg = nn.Linear(x_dim,self.h_dim,bias = False)
+            w_hg = nn.Linear(self.h_dim,self.h_dim,bias = True)
+            params = [(f"w_xz_{l}",w_xz),(f"w_hz_{l}",w_hz),
+                      (f"w_xr_{l}",w_xr),(f"w_hr_{l}",w_hr),
+                      (f"w_xg_{l}",w_xg),(f"w_hg_{l}",w_hg)]
+            for param_name,param in params:
+                self.add_module(param_name,param)
+            self.layer_params.append([param[1] for param in params])      
+        w_hy = nn.Linear(self.h_dim,self.out_dim,bias = True)
+        self.add_module("w_hy",w_hy)
+        self.layer_params.append([w_hy])
         # ========================
 
     def forward(self, input: Tensor, hidden_state: Tensor=None):
@@ -271,7 +267,6 @@ class MultilayerGRU(nn.Module):
         input dimension (number of chars in the case of a char RNN).
         :param hidden_state: Initial hidden state per layer (for the first
         char). Shape should be (B, L, H) where B is the batch size, L is the
-        number of layers, and H is the number of hidden dimensions.
         :return: A tuple of (layer_output, hidden_state).
         The layer_output tensor is the output of the last RNN layer,
         of shape (B, S, O) where B,S are as above and O is the output
@@ -280,7 +275,6 @@ class MultilayerGRU(nn.Module):
         (B, L, H) as above.
         """
         batch_size, seq_len, _ = input.shape
-
         layer_states = []
         for i in range(self.n_layers):
             if hidden_state is None:
@@ -296,28 +290,23 @@ class MultilayerGRU(nn.Module):
         # Tip: You can use torch.stack() to combine multiple tensors into a
         # single tensor in a differentiable manner.
         # ====== YOUR CODE: ======
-        self.to(device=input.device)
-        out_list = []
-        for t in range(seq_len):  # loop over the time
-
-            X_t = input[:, t, :]
-
-            for i in range(self.n_layers):
-                params = self.layer_params[i]
-                h_i = layer_states[i]
-                z = torch.sigmoid(params[0](X_t) + params[1](h_i))
-                r = torch.sigmoid(params[2](X_t) + params[3](h_i))
-                g = torch.tanh(params[4](X_t) + params[5](r * h_i))
-
-                next_h = z * h_i + (1 - z) * g
-                layer_states[i] = next_h
-                X_t = next_h
-
-            out = self.w_y(X_t)
-            out_list.append(out)
-
-        layer_output = torch.stack(out_list, dim=1)
-        hidden_state = torch.stack(layer_states, dim=1)
-
+        hidden_state = layer_states  
+        dropout = nn.Dropout(self.dropout)
+        w_hy = self.layer_params[self.n_layers][0]
+        layer_output = []
+        for i in range(layer_input.shape[1]):
+            x_t = layer_input[:,i,:]
+            for l in range(self.n_layers):
+                x = x_t if l ==0 else dropout(layer_states[l-1])
+                h_l=layer_states[l]
+                w_xz,w_hz,w_xr,w_hr,w_xg,w_hg = self.layer_params[l]
+                z = nn.Sigmoid()(w_xz(x)+w_hz(h_l))
+                r = nn.Sigmoid()(w_xr(x)+w_hr(h_l))
+                g = nn.Tanh()(w_xg(x)+w_hg(r*h_l))
+                next_h = z * h_l + (1 - z) * g
+                hidden_state[l] = next_h
+            layer_output.append(w_hy(hidden_state[-1]))
+        
+        layer_output = torch.stack(layer_output, dim = 1)
         # ========================
-        return layer_output, hidden_state
+        return layer_output, torch.stack(hidden_state,dim = 1)
